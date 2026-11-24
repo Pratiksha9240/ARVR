@@ -1,0 +1,916 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Delightex Edu | First 3D Adventure</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+ --purple:#5E48C4;--deep:#39298E;--pale:#EAE7FE;
+ --yellow:#FFD071;--cyan:#59E4FB;--coral:#ED5661;
+ --ink:#202033;--muted:#68677C;--green:#17865C;
+}
+*{box-sizing:border-box}
+body{margin:0;background:#F5F4FF;color:var(--ink);font-family:Poppins,sans-serif}
+button{font:inherit;cursor:pointer;border:0}
+button:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
+header{
+ height:64px;background:var(--purple);color:white;
+ display:flex;align-items:center;justify-content:space-between;
+ padding:8px 24px
+}
+.brand{display:flex;align-items:center;gap:12px;font-weight:800}
+.logo{background:var(--yellow);color:var(--ink);padding:7px 13px;border-radius:20px;font-size:12px}
+.counter{background:var(--deep);color:var(--yellow);padding:7px 13px;border-radius:12px;font-weight:800}
+main{height:calc(100dvh - 134px);padding:12px;display:flex;align-items:center;justify-content:center}
+.slide{
+ display:none;width:min(1160px,100%);height:100%;overflow-y:auto;
+ background:white;border:3px solid var(--pale);border-radius:24px;
+ padding:23px 27px;box-shadow:0 12px 30px #352c8d13
+}
+.slide.active{display:block;animation:enter .35s ease}
+@keyframes enter{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.center{text-align:center}
+.tag{
+ display:inline-block;background:var(--pale);color:var(--purple);
+ padding:6px 15px;border-radius:20px;font-size:11px;
+ font-weight:800;letter-spacing:1px
+}
+h1,h2{color:var(--purple);line-height:1.22;margin:12px 0}
+h1{font-size:clamp(30px,4vw,48px)}
+h2{font-size:clamp(24px,3vw,34px)}
+h3{font-size:16px;color:var(--purple);margin:9px 0}
+.sub{color:var(--muted);font-size:14px;margin:5px 0 16px}
+.btn{
+ background:var(--purple);color:white;border-radius:13px;
+ padding:11px 18px;font-size:13px;font-weight:800;
+ transition:transform .18s
+}
+.btn:hover:not(:disabled){transform:translateY(-2px)}
+.btn.yellow{background:var(--yellow);color:var(--ink)}
+.btn.light{background:var(--pale);color:var(--purple)}
+.btn.coral{background:var(--coral)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btnrow{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:14px 0}
+.panel{background:#F7F6FF;border:2px solid var(--pale);border-radius:18px;padding:15px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.feedback{min-height:24px;font-weight:800;color:var(--purple);font-size:14px;margin:12px 0}
+.note{font-size:11px;color:var(--muted)}
+.hidden{display:none!important}
+.reveal{
+ max-width:850px;margin:14px auto;background:var(--pale);
+ padding:14px;border-radius:15px;color:var(--deep);font-weight:700
+}
+.scene{
+ position:relative;overflow:hidden;border-radius:20px;
+ border:3px solid var(--pale);background:#d8f5ff;
+ height:clamp(230px,40vh,390px);margin:15px auto;max-width:920px
+}
+.scene canvas{width:100%;height:100%;display:block;touch-action:none}
+.sceneLabel{
+ position:absolute;top:12px;left:12px;background:#ffffffed;
+ border-radius:10px;padding:7px 12px;font-size:12px;font-weight:800;
+ color:var(--purple);pointer-events:none
+}
+.sceneHint{
+ position:absolute;bottom:12px;left:50%;transform:translateX(-50%);
+ background:#25223cdb;color:white;padding:8px 15px;border-radius:12px;
+ font-size:12px;white-space:nowrap;pointer-events:none
+}
+.choice{
+ background:white;border:2px solid var(--pale);border-radius:15px;
+ padding:12px;font-weight:800;color:var(--purple);transition:.2s
+}
+.choice:hover{border-color:var(--purple)}
+.choice.selected{background:var(--pale);border-color:var(--purple)}
+.choice.correct{background:#e1f8e9;border-color:var(--green)}
+.choice.wrong{background:#ffe9ec;border-color:var(--coral)}
+.visualCard{background:white;border:3px solid var(--pale);border-radius:18px;padding:12px}
+.visualCard svg{width:100%;height:145px}
+.videoBox{
+ width:min(860px,100%);aspect-ratio:16/9;background:#242337;
+ border-radius:19px;overflow:hidden;margin:16px auto
+}
+.videoBox iframe{width:100%;height:100%;border:0}
+.stepGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:900px;margin:18px auto}
+.step{padding:15px;background:#F7F6FF;border:2px solid var(--pale);border-radius:17px}
+.stepNumber{
+ width:36px;height:36px;border-radius:50%;background:var(--yellow);
+ display:grid;place-items:center;font-weight:800;margin:0 auto 9px
+}
+.step strong{color:var(--purple);font-size:14px}
+.step p{color:var(--muted);font-size:12px}
+.task{
+ display:flex;align-items:center;gap:12px;padding:14px;
+ background:#F7F6FF;border:2px solid var(--pale);
+ border-radius:14px;cursor:pointer;font-weight:700;font-size:13px
+}
+.task input{width:20px;height:20px;accent-color:var(--purple)}
+.task:has(input:checked){background:#e6faef;border-color:var(--green)}
+.taskGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:880px;margin:18px auto}
+.workbench{
+ display:grid;grid-template-columns:145px 1fr 165px;
+ height:clamp(270px,42vh,390px);border:3px solid var(--pale);
+ border-radius:19px;overflow:hidden;margin:14px auto;max-width:1000px
+}
+.sidebar{background:#F1EFFE;padding:12px;display:flex;flex-direction:column;gap:10px}
+.sidebar button{background:white;border:2px solid #ddd8f4;border-radius:10px;padding:10px 6px;font-size:12px;font-weight:800;color:var(--purple)}
+.sidebar button.selected{border-color:var(--purple);background:var(--pale)}
+.workCanvas{position:relative;overflow:hidden;background:#d9f5ff}
+.workCanvas canvas{display:block;width:100%;height:100%;touch-action:none}
+.workTop{position:absolute;top:10px;left:10px;background:white;padding:7px 12px;border-radius:10px;font-size:11px;font-weight:800;color:var(--purple)}
+.workBottom{position:absolute;bottom:10px;right:10px;background:var(--yellow);border-radius:9px;padding:8px 13px;font-weight:800;font-size:12px}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:100;width:100%;height:100%}
+footer{
+ height:70px;background:white;border-top:2px solid var(--pale);
+ display:flex;justify-content:space-between;align-items:center;padding:10px 24px
+}
+.dots{display:flex;gap:6px}
+.dot{width:8px;height:8px;border-radius:20px;background:#d5d1e9;padding:0}
+.dot.active{width:21px;background:var(--purple)}
+@media(max-width:760px){
+ header .brandText{display:none}
+ main{padding:6px}
+ .slide{padding:16px 12px}
+ .two,.three,.stepGrid,.taskGrid{grid-template-columns:1fr}
+ .workbench{grid-template-columns:90px 1fr 95px}
+ .sidebar{padding:6px;gap:6px}
+ .sidebar button{font-size:10px;padding:7px 3px}
+ .dots{display:none}
+ .sceneHint{font-size:10px}
+}
+</style>
+</head>
+<body>
+<canvas id="confetti"></canvas>
+<header>
+ <div class="brand"><span class="logo">ALPHAGEN</span><span class="brandText">Delightex Edu · 3D Explorer</span></div>
+ <span class="counter" id="counter">1 / 12</span>
+</header>
+<main>
+
+<!-- 1 -->
+<section class="slide active center">
+ <span class="tag">YOUR FIRST 3D ADVENTURE</span>
+ <h1>Ready to Enter a New World?</h1>
+ <p class="sub">A whole world is waiting for you!</p>
+ <div class="scene" style="max-width:950px;height:clamp(270px,48vh,440px)">
+  <canvas id="portalCanvas"></canvas>
+  <div class="sceneLabel">The Magic Portal</div>
+ </div>
+ <button class="btn yellow" onclick="nextSlide()">Enter the World →</button>
+</section>
+
+<!-- 2 -->
+<section class="slide center">
+ <span class="tag">DISCOVER VR</span>
+ <h2>What Is VR?</h2>
+ <p class="sub">VR makes you feel like you're inside a different world.</p>
+ <div class="scene">
+  <canvas id="vrCanvas"></canvas>
+  <div class="sceneLabel">Virtual Reality</div>
+  <div class="sceneHint">Drag left or right to look around</div>
+ </div>
+ <div class="btnrow">
+  <button class="btn light" onclick="turnVR(-1)">← Look Left</button>
+  <button class="btn light" onclick="turnVR(1)">Look Right →</button>
+  <button class="btn yellow" onclick="changeVRWorld()">Change World</button>
+ </div>
+ <div class="reveal">VR takes you into a computer-made world!</div>
+</section>
+
+<!-- 3 -->
+<section class="slide center">
+ <span class="tag">DISCOVER AR</span>
+ <h2>What Is AR?</h2>
+ <p class="sub">AR adds digital things to the real world.</p>
+ <div class="scene">
+  <canvas id="arCanvas"></canvas>
+  <div class="sceneLabel">Augmented Reality</div>
+  <div class="sceneHint">Drag the dinosaur to move it</div>
+ </div>
+ <div class="btnrow">
+  <button class="btn light" onclick="scaleAR(-.15)">Smaller −</button>
+  <button class="btn light" onclick="scaleAR(.15)">Bigger +</button>
+  <button class="btn yellow" onclick="resetAR()">Reset</button>
+ </div>
+ <div class="reveal">A digital dinosaur in a real room? That's AR!</div>
+ <p class="note">This is an AR demonstration, not a live camera view.</p>
+</section>
+
+<!-- 4 -->
+<section class="slide center">
+ <span class="tag">PICTURE CHALLENGE</span>
+ <h2>AR or VR?</h2>
+ <p class="sub" id="arvrQuestion">Which one puts a digital dinosaur in your room?</p>
+ <div class="two" style="max-width:900px;margin:20px auto">
+  <button class="visualCard choice" onclick="answerMode('VR',this)">
+   <svg viewBox="0 0 400 160">
+    <rect width="400" height="160" rx="15" fill="#eae7fe"/>
+    <circle cx="200" cy="80" r="60" fill="#FFD071"/>
+    <rect x="125" y="50" width="150" height="65" rx="27" fill="#25233f"/>
+    <rect x="141" y="64" width="118" height="35" rx="16" fill="#5E48C4"/>
+    <path d="M124 80H95M276 80H305" stroke="#25233f" stroke-width="12"/>
+   </svg>
+   <strong>VR</strong>
+  </button>
+  <button class="visualCard choice" onclick="answerMode('AR',this)">
+   <svg viewBox="0 0 400 160">
+    <rect width="400" height="160" rx="15" fill="#dff8ff"/>
+    <rect x="135" y="5" width="130" height="150" rx="18" fill="#25233f"/>
+    <rect x="146" y="17" width="108" height="119" rx="6" fill="#d5f5ff"/>
+    <rect x="146" y="105" width="108" height="31" fill="#b2dcb8"/>
+    <path d="M177 110Q163 63 195 54Q227 44 231 93L243 110Z" fill="#20A77A"/>
+    <circle cx="216" cy="70" r="5" fill="white"/>
+   </svg>
+   <strong>AR</strong>
+  </button>
+ </div>
+ <div class="feedback" id="arvrFeedback"></div>
+ <button class="btn yellow hidden" id="arvrNext" onclick="nextModeQuestion()">Next Question →</button>
+</section>
+
+<!-- 5 -->
+<section class="slide center">
+ <span class="tag">WATCH & DISCOVER</span>
+ <h2>See AR and VR in Action!</h2>
+ <p class="sub">What amazing things do you notice?</p>
+ <div class="videoBox">
+  <iframe id="lessonVideo"
+   src="https://www.youtube-nocookie.com/embed/vz0UUVDt2ps?rel=0"
+   title="AR and VR video"
+   allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture;web-share"
+   referrerpolicy="strict-origin-when-cross-origin"
+   allowfullscreen></iframe>
+ </div>
+ <p class="note">If the video doesn't load, <a href="https://www.youtube.com/watch?v=vz0UUVDt2ps" target="_blank" rel="noopener noreferrer">watch it on YouTube</a>.</p>
+ <h3>Where would you love to go?</h3>
+ <div class="btnrow">
+  <button class="btn light" onclick="chooseVideo('Space',this)">Space</button>
+  <button class="btn light" onclick="chooseVideo('Under the Ocean',this)">Under the Ocean</button>
+  <button class="btn light" onclick="chooseVideo('Dinosaur World',this)">Dinosaur World</button>
+ </div>
+ <div class="feedback" id="videoFeedback"></div>
+</section>
+
+<!-- 6 -->
+<section class="slide center">
+ <span class="tag">MEET YOUR CREATION TOOL</span>
+ <h2>Meet Delightex Edu!</h2>
+ <p class="sub">Make your own 3D worlds.</p>
+ <div class="scene">
+  <canvas id="platformCanvas"></canvas>
+  <div class="sceneLabel">Watch a world come to life</div>
+ </div>
+ <div class="three" style="max-width:850px;margin:auto">
+  <div class="panel"><h3>Choose</h3><p class="sub">Find 3D things</p></div>
+  <div class="panel"><h3>Create</h3><p class="sub">Make your world</p></div>
+  <div class="panel"><h3>Explore</h3><p class="sub">Look around</p></div>
+ </div>
+ <div class="btnrow">
+  <button class="btn yellow" onclick="window.open('https://edu.delightex.com/','_blank','noopener,noreferrer')">Open Delightex Edu ↗</button>
+ </div>
+</section>
+
+<!-- 7 -->
+<section class="slide center">
+ <span class="tag">3D WORKSPACE</span>
+ <h2>Let's Try the 3D Tools!</h2>
+ <p class="sub">Select the object. Then move, turn or resize it.</p>
+ <div class="workbench">
+  <div class="sidebar">
+   <button onclick="addWorkspaceObject('tree')">Add Tree</button>
+   <button onclick="addWorkspaceObject('cube')">Add Cube</button>
+   <button onclick="addWorkspaceObject('sphere')">Add Ball</button>
+  </div>
+  <div class="workCanvas">
+   <div class="workTop">Practice 3D Scene</div>
+   <canvas id="workspaceCanvas"></canvas>
+  </div>
+  <div class="sidebar">
+   <button id="toolMove" class="selected" onclick="setWorkspaceTool('move')">Move</button>
+   <button id="toolRotate" onclick="setWorkspaceTool('rotate')">Rotate</button>
+   <button id="toolScale" onclick="setWorkspaceTool('scale')">Resize</button>
+   <button onclick="resetWorkspace()">Reset</button>
+  </div>
+ </div>
+ <div class="reveal" id="workspaceFeedback">Choose a 3D object to add!</div>
+ <p class="note">This is a practice scene. Delightex Edu has its own tools and controls.</p>
+</section>
+
+<!-- 8 -->
+<section class="slide center">
+ <span class="tag">YOUR FIRST PROJECT</span>
+ <h2>All About Me!</h2>
+ <p class="sub">Let's make a 3D world that shows what you love.</p>
+ <div class="scene">
+  <canvas id="aboutCanvas"></canvas>
+  <div class="sceneLabel">Your 3D Story</div>
+ </div>
+ <div class="stepGrid">
+  <div class="step"><div class="stepNumber">1</div><strong>Open Delightex</strong><p>Go to your projects</p></div>
+  <div class="step"><div class="stepNumber">2</div><strong>Find the Template</strong><p>Choose "All about me"</p></div>
+  <div class="step"><div class="stepNumber">3</div><strong>Look Around</strong><p>See what's inside</p></div>
+ </div>
+ <div class="btnrow">
+  <button class="btn yellow" onclick="window.open('https://edu.delightex.com/','_blank','noopener,noreferrer')">Go to Delightex Edu ↗</button>
+ </div>
+</section>
+
+<!-- 9 -->
+<section class="slide center">
+ <span class="tag">EXPLORER MISSIONS</span>
+ <h2>What's Inside Your World?</h2>
+ <p class="sub">Try these in the real Delightex Edu template.</p>
+ <div class="taskGrid">
+  <label class="task"><input type="checkbox" onchange="checkExplore()">Look around the scene</label>
+  <label class="task"><input type="checkbox" onchange="checkExplore()">Find your favourite object</label>
+  <label class="task"><input type="checkbox" onchange="checkExplore()">Click an object</label>
+  <label class="task"><input type="checkbox" onchange="checkExplore()">Move an object</label>
+ </div>
+ <div class="scene" style="height:240px">
+  <canvas id="exploreCanvas"></canvas>
+ </div>
+ <div class="feedback" id="exploreFeedback">0 of 4 missions completed</div>
+</section>
+
+<!-- 10 -->
+<section class="slide center">
+ <span class="tag">MAKE IT YOURS</span>
+ <h2>Show Something You Love!</h2>
+ <p class="sub">Choose an idea. Then try it in your template.</p>
+ <div class="three" style="max-width:850px;margin:15px auto">
+  <button class="choice" onclick="chooseAbout('animal',this)">Favourite Animal</button>
+  <button class="choice" onclick="chooseAbout('game',this)">Favourite Game</button>
+  <button class="choice" onclick="chooseAbout('food',this)">Favourite Food</button>
+ </div>
+ <div class="scene">
+  <canvas id="personalCanvas"></canvas>
+  <div class="sceneLabel">Your Idea Preview</div>
+ </div>
+ <div class="reveal" id="personalFeedback">Pick something you love!</div>
+ <button class="btn yellow" onclick="personalDone()">I Added My Idea!</button>
+</section>
+
+<!-- 11 -->
+<section class="slide center">
+ <span class="tag">PLAY MODE</span>
+ <h2>Step Into Your Creation!</h2>
+ <p class="sub">Press Play in Delightex Edu and explore your scene.</p>
+ <div class="scene">
+  <canvas id="playCanvas"></canvas>
+  <div class="sceneLabel">Walk Through Your World</div>
+  <div class="sceneHint">Drag to look around</div>
+ </div>
+ <div class="btnrow">
+  <button class="btn light" onclick="playLook(-1)">← Look Left</button>
+  <button class="btn light" onclick="playLook(1)">Look Right →</button>
+  <button class="btn yellow" onclick="playWalk()">Walk Forward</button>
+ </div>
+ <div class="reveal">What did you discover in your world?</div>
+ <p class="note">This is a preview. Explore your actual scene in Delightex Edu.</p>
+</section>
+
+<!-- 12 -->
+<section class="slide center">
+ <span class="tag">MISSION COMPLETE</span>
+ <h1>You're a 3D Explorer!</h1>
+ <p class="sub">Three final mini challenges!</p>
+ <div class="scene" style="height:230px">
+  <canvas id="finalCanvas"></canvas>
+ </div>
+ <div class="taskGrid">
+  <label class="task"><input type="checkbox" onchange="checkFinal()">I can explain VR</label>
+  <label class="task"><input type="checkbox" onchange="checkFinal()">I can explain AR</label>
+  <label class="task"><input type="checkbox" onchange="checkFinal()">I explored my 3D scene</label>
+  <label class="task"><input type="checkbox" onchange="checkFinal()">I changed something in it</label>
+ </div>
+ <div class="feedback" id="finalFeedback">0 of 4 missions complete</div>
+ <button class="btn yellow" onclick="finishLesson()">Finish Lesson!</button>
+</section>
+
+</main>
+<footer>
+ <button class="btn light" id="prev" onclick="prevSlide()">← Previous</button>
+ <div class="dots" id="dots"></div>
+ <button class="btn yellow" id="next" onclick="nextSlide()">Next →</button>
+</footer>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const total=12;
+let current=1;
+let running=true;
+const TAU=Math.PI*2;
+
+function showSlide(n){
+ if(n<1||n>total)return;
+ if(current===5&&n!==5){
+  const v=$("lessonVideo");
+  v.src=v.src;
+ }
+ current=n;
+ document.querySelectorAll(".slide").forEach((s,i)=>{
+  s.classList.toggle("active",i===n-1);
+  if(i===n-1)s.scrollTop=0;
+ });
+ $("counter").textContent=n+" / "+total;
+ $("prev").disabled=n===1;
+ $("next").disabled=n===total;
+ $("dots").innerHTML="";
+ for(let i=1;i<=total;i++){
+  const b=document.createElement("button");
+  b.className="dot"+(i===n?" active":"");
+  b.title="Slide "+i;
+  b.setAttribute("aria-label","Slide "+i);
+  b.onclick=()=>showSlide(i);
+  $("dots").appendChild(b);
+ }
+}
+function nextSlide(){showSlide(current+1)}
+function prevSlide(){showSlide(current-1)}
+
+function confetti(){
+ const c=$("confetti"),ctx=c.getContext("2d"),d=devicePixelRatio||1;
+ c.width=innerWidth*d;c.height=innerHeight*d;
+ ctx.setTransform(d,0,0,d,0,0);
+ const colors=["#5E48C4","#FFD071","#59E4FB","#ED5661"];
+ const bits=Array.from({length:110},()=>({
+  x:Math.random()*innerWidth,y:-Math.random()*innerHeight,
+  v:2+Math.random()*4,s:4+Math.random()*6,
+  color:colors[Math.floor(Math.random()*colors.length)]
+ }));
+ let frame=0;
+ function draw(){
+  ctx.clearRect(0,0,innerWidth,innerHeight);
+  bits.forEach(p=>{
+   p.y+=p.v;ctx.fillStyle=p.color;
+   ctx.fillRect(p.x,p.y,p.s,p.s);
+  });
+  if(++frame<160)requestAnimationFrame(draw);
+  else ctx.clearRect(0,0,innerWidth,innerHeight);
+ }
+ draw();
+}
+
+function canvasInfo(id){
+ const c=$(id);
+ const r=c.getBoundingClientRect();
+ const d=Math.min(devicePixelRatio||1,2);
+ const w=Math.max(1,r.width),h=Math.max(1,r.height);
+ if(c.width!==Math.round(w*d)||c.height!==Math.round(h*d)){
+  c.width=Math.round(w*d);c.height=Math.round(h*d);
+ }
+ const ctx=c.getContext("2d");
+ ctx.setTransform(d,0,0,d,0,0);
+ return {c,ctx,w,h};
+}
+function roundRect(ctx,x,y,w,h,r,color){
+ ctx.fillStyle=color;ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill();
+}
+function line(ctx,x1,y1,x2,y2,color,width=2){
+ ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);
+ ctx.strokeStyle=color;ctx.lineWidth=width;ctx.stroke();
+}
+function ellipse(ctx,x,y,rx,ry,color){
+ ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,TAU);
+ ctx.fillStyle=color;ctx.fill();
+}
+function circle(ctx,x,y,r,color){
+ ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.fillStyle=color;ctx.fill();
+}
+function polygon(ctx,points,color){
+ ctx.beginPath();ctx.moveTo(points[0][0],points[0][1]);
+ for(let i=1;i<points.length;i++)ctx.lineTo(points[i][0],points[i][1]);
+ ctx.closePath();ctx.fillStyle=color;ctx.fill();
+}
+function sky(ctx,w,h,theme="meadow"){
+ const g=ctx.createLinearGradient(0,0,0,h);
+ if(theme==="space"){
+  g.addColorStop(0,"#17173c");g.addColorStop(1,"#5654aa");
+ }else if(theme==="ocean"){
+  g.addColorStop(0,"#66dff2");g.addColorStop(1,"#1771a5");
+ }else{
+  g.addColorStop(0,"#9be3ff");g.addColorStop(1,"#f3eaff");
+ }
+ ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+}
+function cube(ctx,x,y,s,colors=["#8777e0","#5E48C4","#42349a"]){
+ polygon(ctx,[[x,y-s],[x+s,y-s*.48],[x,y],[x-s,y-s*.48]],colors[0]);
+ polygon(ctx,[[x-s,y-s*.48],[x,y],[x,y+s],[x-s,y+s*.48]],colors[1]);
+ polygon(ctx,[[x+s,y-s*.48],[x,y],[x,y+s],[x+s,y+s*.48]],colors[2]);
+}
+function tree(ctx,x,y,s){
+ ctx.save();ctx.translate(x,y);ctx.scale(s,s);
+ ellipse(ctx,0,4,45,12,"#4d8f6e44");
+ roundRect(ctx,-9,-65,18,70,5,"#916340");
+ polygon(ctx,[[-52,-50],[0,-155],[52,-50]],"#17865C");
+ polygon(ctx,[[-45,-90],[0,-175],[45,-90]],"#20A77A");
+ polygon(ctx,[[-35,-125],[0,-193],[35,-125]],"#49c48c");
+ ctx.restore();
+}
+function robot(ctx,x,y,s,t=0){
+ ctx.save();ctx.translate(x,y+Math.sin(t*2)*4);ctx.scale(s,s);
+ ellipse(ctx,0,55,50,12,"#39298e30");
+ roundRect(ctx,-38,-42,76,82,17,"#5E48C4");
+ roundRect(ctx,-29,-30,58,52,13,"white");
+ circle(ctx,-13,-7,6,"#242337");
+ circle(ctx,13,-7,6,"#242337");
+ ctx.beginPath();ctx.arc(0,2,17,.2,Math.PI-.2);
+ ctx.strokeStyle="#ED5661";ctx.lineWidth=4;ctx.stroke();
+ roundRect(ctx,-5,-57,10,17,4,"#7B6ED4");
+ circle(ctx,0,-62,9,"#FFD071");
+ ctx.restore();
+}
+function dinosaur(ctx,x,y,s,t=0){
+ ctx.save();ctx.translate(x,y+Math.sin(t*2)*3);ctx.scale(s,s);
+ ellipse(ctx,0,5,76,15,"#22222220");
+ polygon(ctx,[[-47,-25],[-105,-65],[-83,-10],[-35,9]],"#188d67");
+ ellipse(ctx,0,-52,59,62,"#20A77A");
+ roundRect(ctx,32,-125,34,86,17,"#20A77A");
+ ellipse(ctx,49,-127,37,31,"#20A77A");
+ polygon(ctx,[[61,-112],[96,-102],[61,-93]],"#4cbd8b");
+ circle(ctx,59,-137,7,"white");
+ circle(ctx,61,-137,3,"#242337");
+ for(let i=0;i<4;i++){
+  polygon(ctx,[[-40+i*24,-99],[-31+i*24,-118],[-20+i*24,-100]],"#FFD071");
+ }
+ roundRect(ctx,-30,-15,19,29,7,"#188d67");
+ roundRect(ctx,18,-15,19,29,7,"#188d67");
+ ctx.restore();
+}
+function ball(ctx,x,y,r){
+ circle(ctx,x,y,r,"white");
+ ctx.strokeStyle="#2a2a40";ctx.lineWidth=3;
+ ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.stroke();
+ polygon(ctx,[
+  [x,y-r*.48],[x+r*.45,y-r*.15],[x+r*.28,y+r*.4],
+  [x-r*.28,y+r*.4],[x-r*.45,y-r*.15]
+ ],"#242337");
+}
+function house(ctx,x,y,s){
+ ctx.save();ctx.translate(x,y);ctx.scale(s,s);
+ ellipse(ctx,0,7,110,18,"#00000018");
+ roundRect(ctx,-75,-105,150,112,5,"#fff0cf");
+ polygon(ctx,[[-94,-104],[0,-185],[94,-104]],"#ED5661");
+ roundRect(ctx,-19,-70,38,77,4,"#5E48C4");
+ roundRect(ctx,-62,-80,30,32,3,"#59E4FB");
+ roundRect(ctx,32,-80,30,32,3,"#59E4FB");
+ ctx.restore();
+}
+function sceneGround(ctx,w,h,theme="meadow"){
+ if(theme==="space"){
+  polygon(ctx,[[0,h*.7],[w*.5,h*.61],[w,h*.7],[w,h],[0,h]],"#655eae");
+ }else if(theme==="ocean"){
+  polygon(ctx,[[0,h*.74],[w*.5,h*.65],[w,h*.74],[w,h],[0,h]],"#d5d0a6");
+ }else{
+  polygon(ctx,[[0,h*.76],[w*.5,h*.65],[w,h*.76],[w,h],[0,h]],"#91d5a8");
+ }
+}
+function renderWorld(ctx,w,h,t,angle=0,theme="meadow",walk=0){
+ sky(ctx,w,h,theme);
+ const horizon=h*.69;
+ if(theme==="space"){
+  for(let i=0;i<40;i++){
+   const x=((i*127+13)%1000)/1000*w;
+   const y=((i*83+9)%1000)/1000*h*.6;
+   circle(ctx,x,y,1.5+(i%3),i%2?"#FFD071":"white");
+  }
+  circle(ctx,w*.8,h*.19,35,"#d7a2fa");
+ }else if(theme==="ocean"){
+  for(let i=0;i<12;i++){
+   circle(ctx,(i*79)%w,(i*43)%Math.max(1,h*.65),4+(i%3)*3,"#d6faff88");
+  }
+ }else{
+  circle(ctx,w*.82,h*.18,35,"#FFD071");
+  for(let i=0;i<4;i++){
+   ellipse(ctx,(i*.29+.12)*w,h*.18+(i%2)*23,50,16,"#ffffffaa");
+  }
+ }
+ sceneGround(ctx,w,h,theme);
+ const shift=Math.sin(angle)*w*.35;
+ const depth=1+walk*.15;
+ tree(ctx,w*.17-shift*.6,h*.74,Math.max(.4,w/900)*depth);
+ tree(ctx,w*.86-shift*.5,h*.77,Math.max(.45,w/750)*depth);
+ house(ctx,w*.48-shift,h*.78,Math.min(w/650,1.2)*depth);
+ robot(ctx,w*.7-shift*1.25,h*.81,Math.min(w/850,1)*depth,t);
+ if(theme==="space"){
+  cube(ctx,w*.3-shift*.8,h*.73,35*depth);
+ }
+}
+
+/* Portal animation */
+function drawPortal(t){
+ const {ctx,w,h}=canvasInfo("portalCanvas");
+ sky(ctx,w,h,"space");
+ const cx=w*.5,cy=h*.49;
+ for(let i=9;i>=0;i--){
+  const phase=(t*.55+i/10)%1;
+  const r=(.13+phase*.9)*Math.min(w,h);
+  ctx.beginPath();ctx.ellipse(cx,cy,r*.8,r,0,0,TAU);
+  ctx.strokeStyle=i%2?"#59E4FB":"#FFD071";
+  ctx.globalAlpha=(1-phase)*.7;
+  ctx.lineWidth=3+(1-phase)*6;ctx.stroke();
+ }
+ ctx.globalAlpha=1;
+ ctx.save();
+ ctx.beginPath();ctx.ellipse(cx,cy,w*.19,h*.4,0,0,TAU);ctx.clip();
+ renderWorld(ctx,w,h,t,t*.2,"meadow",0);
+ ctx.restore();
+ for(let i=0;i<30;i++){
+  const x=(i*117+t*13)%w,y=(i*59+t*17)%h;
+  circle(ctx,x,y,2+(i%3),"#FFD071");
+ }
+}
+
+/* VR */
+let vrAngle=0,vrThemeIndex=0;
+const vrThemes=["meadow","space","ocean"];
+function turnVR(dir){vrAngle+=dir*.5}
+function changeVRWorld(){vrThemeIndex=(vrThemeIndex+1)%3;vrAngle=0}
+function drawVR(t){
+ const {ctx,w,h}=canvasInfo("vrCanvas");
+ renderWorld(ctx,w,h,t,vrAngle,vrThemes[vrThemeIndex]);
+ const shade=ctx.createRadialGradient(w/2,h/2,w*.1,w/2,h/2,w*.65);
+ shade.addColorStop(0,"#00000000");
+ shade.addColorStop(1,"#19143e55");
+ ctx.fillStyle=shade;ctx.fillRect(0,0,w,h);
+}
+function dragCanvas(id,handler){
+ const c=$(id);
+ let startX=null;
+ c.addEventListener("pointerdown",e=>{
+  startX=e.clientX;c.setPointerCapture(e.pointerId);
+ });
+ c.addEventListener("pointermove",e=>{
+  if(startX===null)return;
+  const dx=e.clientX-startX;startX=e.clientX;
+  handler(dx,e);
+ });
+ ["pointerup","pointercancel","lostpointercapture"].forEach(name=>{
+  c.addEventListener(name,()=>startX=null);
+ });
+}
+dragCanvas("vrCanvas",dx=>vrAngle+=dx*.007);
+
+/* AR */
+let arX=.55,arY=.82,arScale=1;
+function scaleAR(n){arScale=Math.max(.45,Math.min(1.8,arScale+n))}
+function resetAR(){arX=.55;arY=.82;arScale=1}
+function drawAR(t){
+ const {ctx,w,h}=canvasInfo("arCanvas");
+ const g=ctx.createLinearGradient(0,0,0,h);
+ g.addColorStop(0,"#f1e9db");g.addColorStop(1,"#d5d0c7");
+ ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+ polygon(ctx,[[0,h*.72],[w*.5,h*.56],[w,h*.72],[w,h],[0,h]],"#bca990");
+ line(ctx,0,h*.72,w*.5,h*.56,"#b1a28c",2);
+ line(ctx,w,h*.72,w*.5,h*.56,"#b1a28c",2);
+ roundRect(ctx,w*.09,h*.1,w*.23,h*.42,9,"white");
+ roundRect(ctx,w*.105,h*.12,w*.2,h*.38,5,"#9ed9ed");
+ line(ctx,w*.205,h*.12,w*.205,h*.5,"white",6);
+ line(ctx,w*.105,h*.31,w*.305,h*.31,"white",6);
+ roundRect(ctx,w*.76,h*.4,w*.16,h*.27,8,"#b7b1da");
+ ellipse(ctx,w*.84,h*.4,w*.1,h*.07,"#948bc7");
+ const s=Math.min(w/650,1.1)*arScale;
+ dinosaur(ctx,w*arX,h*arY,s,t);
+}
+dragCanvas("arCanvas",(dx,e)=>{
+ const r=$("arCanvas").getBoundingClientRect();
+ arX=Math.max(.13,Math.min(.88,arX+dx/r.width));
+ arY=Math.max(.65,Math.min(.95,(e.clientY-r.top)/r.height));
+});
+
+/* AR VR quiz */
+const modeQuestions=[
+ {q:"Which one puts a digital dinosaur in your room?",a:"AR"},
+ {q:"Which one takes you into a make-believe world?",a:"VR"}
+];
+let modeIndex=0,modeAnswered=false;
+function answerMode(answer,button){
+ if(modeAnswered)return;
+ modeAnswered=true;
+ const right=answer===modeQuestions[modeIndex].a;
+ button.classList.add(right?"correct":"wrong");
+ $("arvrFeedback").textContent=right
+  ?"Correct! You got it!"
+  :`Good try! This one is ${modeQuestions[modeIndex].a}.`;
+ $("arvrNext").classList.remove("hidden");
+ if(right)confetti();
+}
+function nextModeQuestion(){
+ modeIndex++;
+ if(modeIndex>=modeQuestions.length){
+  $("arvrFeedback").textContent="Brilliant! You know AR and VR!";
+  $("arvrNext").classList.add("hidden");confetti();return;
+ }
+ modeAnswered=false;
+ $("arvrQuestion").textContent=modeQuestions[modeIndex].q;
+ $("arvrFeedback").textContent="";
+ document.querySelectorAll(".visualCard").forEach(b=>b.classList.remove("correct","wrong"));
+ $("arvrNext").classList.add("hidden");
+}
+function chooseVideo(name,button){
+ button.parentElement.querySelectorAll("button").forEach(b=>b.classList.remove("selected"));
+ button.classList.add("selected");
+ $("videoFeedback").textContent=name+" would be an amazing place to explore!";
+}
+
+/* Platform animation */
+function drawPlatform(t){
+ const {ctx,w,h}=canvasInfo("platformCanvas");
+ sky(ctx,w,h);
+ sceneGround(ctx,w,h);
+ const progress=(t*.24)%4;
+ tree(ctx,w*.2,h*.8,Math.min(w/900,.8));
+ house(ctx,w*.49,h*.82,Math.min(w/650,1));
+ if(progress>1)robot(ctx,w*.73,h*.81,Math.min(w/750,1),t);
+ if(progress>2)cube(ctx,w*.36,h*.78,Math.min(w/20,42));
+ if(progress>3)dinosaur(ctx,w*.85,h*.85,Math.min(w/850,.65),t);
+ roundRect(ctx,15,15,130,35,10,"#ffffffdd");
+ ctx.fillStyle="#5E48C4";ctx.font="bold 13px Poppins";
+ ctx.fillText("Building a World",26,37);
+}
+
+/* Workspace */
+let workspaceObjects=[],workspaceTool="move",workspaceSelected=-1;
+function addWorkspaceObject(type){
+ workspaceObjects.push({
+  type,x:.3+Math.random()*.4,y:.77,
+  size:1,rotation:0
+ });
+ workspaceSelected=workspaceObjects.length-1;
+ $("workspaceFeedback").textContent="Great! Now try moving, turning or resizing it.";
+}
+function setWorkspaceTool(tool){
+ workspaceTool=tool;
+ document.querySelectorAll("#toolMove,#toolRotate,#toolScale").forEach(b=>b.classList.remove("selected"));
+ $("tool"+tool[0].toUpperCase()+tool.slice(1)).classList.add("selected");
+ $("workspaceFeedback").textContent={
+  move:"Drag the object to move it.",
+  rotate:"Drag left or right to turn the object.",
+  scale:"Drag right to make it bigger. Drag left to make it smaller."
+ }[tool];
+}
+function resetWorkspace(){
+ workspaceObjects=[];workspaceSelected=-1;
+ $("workspaceFeedback").textContent="Choose a 3D object to add!";
+}
+function drawWorkspace(t){
+ const {ctx,w,h}=canvasInfo("workspaceCanvas");
+ sky(ctx,w,h);sceneGround(ctx,w,h);
+ workspaceObjects.forEach((o,i)=>{
+  const x=o.x*w,y=o.y*h;
+  ctx.save();ctx.translate(x,y);ctx.rotate(o.rotation);
+  if(o.type==="tree")tree(ctx,0,0,Math.min(w/700,1)*o.size);
+  else if(o.type==="cube")cube(ctx,0,0,Math.min(w/16,38)*o.size);
+  else{
+   const r=Math.min(w/11,42)*o.size;
+   const g=ctx.createRadialGradient(-r*.3,-r*.3,2,0,0,r);
+   g.addColorStop(0,"#fff5be");g.addColorStop(1,"#ED5661");
+   circle(ctx,0,0,r,g);
+  }
+  ctx.restore();
+  if(i===workspaceSelected){
+   ctx.strokeStyle="#ED5661";ctx.lineWidth=2;
+   ctx.setLineDash([6,4]);
+   ctx.strokeRect(x-46*o.size,y-90*o.size,92*o.size,105*o.size);
+   ctx.setLineDash([]);
+  }
+ });
+}
+let workspaceDrag=null;
+const wc=$("workspaceCanvas");
+wc.addEventListener("pointerdown",e=>{
+ const r=wc.getBoundingClientRect();
+ const x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
+ let closest=-1,dist=Infinity;
+ workspaceObjects.forEach((o,i)=>{
+  const d=Math.hypot(o.x-x,o.y-y);
+  if(d<dist){dist=d;closest=i}
+ });
+ if(dist<.3){workspaceSelected=closest;workspaceDrag={x:e.clientX,y:e.clientY};wc.setPointerCapture(e.pointerId)}
+});
+wc.addEventListener("pointermove",e=>{
+ if(!workspaceDrag||workspaceSelected<0)return;
+ const r=wc.getBoundingClientRect(),o=workspaceObjects[workspaceSelected];
+ const dx=e.clientX-workspaceDrag.x,dy=e.clientY-workspaceDrag.y;
+ if(workspaceTool==="move"){
+  o.x=Math.max(.1,Math.min(.9,o.x+dx/r.width));
+  o.y=Math.max(.58,Math.min(.95,o.y+dy/r.height));
+ }else if(workspaceTool==="rotate")o.rotation+=dx*.015;
+ else o.size=Math.max(.4,Math.min(2.5,o.size+dx*.008));
+ workspaceDrag={x:e.clientX,y:e.clientY};
+});
+["pointerup","pointercancel","lostpointercapture"].forEach(n=>wc.addEventListener(n,()=>workspaceDrag=null));
+
+/* About me */
+function drawAbout(t,id="aboutCanvas",addition=null){
+ const {ctx,w,h}=canvasInfo(id);
+ sky(ctx,w,h);sceneGround(ctx,w,h);
+ tree(ctx,w*.15,h*.79,Math.min(w/900,.9));
+ house(ctx,w*.47,h*.81,Math.min(w/650,1.05));
+ robot(ctx,w*.74,h*.82,Math.min(w/800,.9),t);
+ if(addition==="animal")dinosaur(ctx,w*.86,h*.87,Math.min(w/1000,.65),t);
+ if(addition==="game")ball(ctx,w*.86,h*.8,Math.min(w/20,35));
+ if(addition==="food"){
+  ellipse(ctx,w*.86,h*.81,42,12,"#edb96b");
+  polygon(ctx,[[w*.81,h*.8],[w*.91,h*.8],[w*.86,h*.68]],"#FFD071");
+  for(let i=0;i<3;i++)circle(ctx,w*(.84+i*.02),h*.77,5,"#ED5661");
+ }
+}
+function checkExplore(){
+ const boxes=[...document.querySelectorAll("#exploreFeedback")][0].closest(".slide").querySelectorAll("input");
+ const done=[...boxes].filter(b=>b.checked).length;
+ $("exploreFeedback").textContent=done+" of 4 missions completed";
+ if(done===4)confetti();
+}
+let personalChoice=null;
+function chooseAbout(type,button){
+ personalChoice=type;
+ button.parentElement.querySelectorAll(".choice").forEach(b=>b.classList.remove("selected"));
+ button.classList.add("selected");
+ $("personalFeedback").textContent={
+  animal:"Find an animal you like and add it to your scene.",
+  game:"Find something that shows a game you love.",
+  food:"Find something that shows your favourite food."
+ }[type];
+}
+function personalDone(){
+ if(!personalChoice){$("personalFeedback").textContent="Choose an idea first!";return}
+ $("personalFeedback").textContent="Amazing! Your world is becoming your own!";
+ confetti();
+}
+
+/* Play mode */
+let playAngle=0,playDistance=0;
+function playLook(dir){playAngle+=dir*.45}
+function playWalk(){playDistance=Math.min(2,playDistance+.3)}
+dragCanvas("playCanvas",dx=>playAngle+=dx*.007);
+function drawPlay(t){
+ const {ctx,w,h}=canvasInfo("playCanvas");
+ renderWorld(ctx,w,h,t,playAngle,"meadow",playDistance);
+ const shade=ctx.createRadialGradient(w/2,h/2,w*.1,w/2,h/2,w*.7);
+ shade.addColorStop(0,"#00000000");shade.addColorStop(1,"#30235d44");
+ ctx.fillStyle=shade;ctx.fillRect(0,0,w,h);
+}
+
+/* Final */
+function drawFinal(t){
+ const {ctx,w,h}=canvasInfo("finalCanvas");
+ sky(ctx,w,h,"space");
+ const cx=w*.5,cy=h*.48;
+ for(let i=0;i<5;i++){
+  const r=45+i*19+Math.sin(t*2+i)*4;
+  ctx.beginPath();ctx.ellipse(cx,cy,r,r*.7,0,0,TAU);
+  ctx.strokeStyle=i%2?"#59E4FB":"#FFD071";
+  ctx.lineWidth=4;ctx.stroke();
+ }
+ robot(ctx,cx,cy+50,Math.min(w/500,1.1),t);
+ for(let i=0;i<18;i++){
+  circle(ctx,(i*117+t*15)%w,(i*71)%h,2+(i%3),"#FFD071");
+ }
+}
+let finalCelebrated=false;
+function checkFinal(){
+ const boxes=[...$("finalFeedback").closest(".slide").querySelectorAll("input")];
+ const done=boxes.filter(b=>b.checked).length;
+ $("finalFeedback").textContent=done+" of 4 missions complete";
+ if(done===4&&!finalCelebrated){finalCelebrated=true;confetti()}
+}
+function finishLesson(){
+ const boxes=[...$("finalFeedback").closest(".slide").querySelectorAll("input")];
+ if(boxes.every(b=>b.checked)){
+  $("finalFeedback").textContent="Mission Complete! You're a 3D Explorer!";
+  confetti();
+ }else{
+  $("finalFeedback").textContent="Complete your missions first!";
+ }
+}
+
+/* Animation loop: draw only the active slide */
+function animate(ms){
+ if(!running)return;
+ const t=ms/1000;
+ try{
+  if(current===1)drawPortal(t);
+  if(current===2)drawVR(t);
+  if(current===3)drawAR(t);
+  if(current===6)drawPlatform(t);
+  if(current===7)drawWorkspace(t);
+  if(current===8)drawAbout(t);
+  if(current===9)drawAbout(t,"exploreCanvas");
+  if(current===10)drawAbout(t,"personalCanvas",personalChoice);
+  if(current===11)drawPlay(t);
+  if(current===12)drawFinal(t);
+ }catch(err){console.error("Scene error:",err)}
+ requestAnimationFrame(animate);
+}
+showSlide(1);
+requestAnimationFrame(animate);
+</script>
+</body>
+</html>
